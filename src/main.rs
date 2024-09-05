@@ -19,38 +19,33 @@ impl Orderbook {
             bids: HashMap::new(),
         }
     }
-
+    // this function adds an order
     fn add_order(&mut self, price: f64, order: Order) {
         
         let price = Price::new(price);
        
         match order.bid_or_ask {
-            BidOrAsk::Bid => { 
-
-                match self.bids.get_mut(&price) {
-                    Some(limit) => limit.add_order(order),
-                    None => {
-                        let mut limit = Limit::new(price);
-                        limit.add_order(order);
-                        self.bids.insert(price, limit);
-                    }
+            BidOrAsk::Bid => match self.bids.get_mut(&price) {
+                Some(limit) => limit.add_order(order),
+                None => {
+                    let mut limit = Limit::new(price);
+                    limit.add_order(order);
+                    self.bids.insert(price, limit);
                 }
-
-            }
-            BidOrAsk::Ask => { 
-                
-                match self.bids.get_mut(&price) {
-                    Some(limit) => limit.add_order(order),
-                    None => {
-                        let mut limit = Limit::new(price);
-                        limit.add_order(order);
-                        self.asks.insert(price, limit);
-                    }
+            },
+            
+            BidOrAsk::Ask => match self.bids.get_mut(&price) { 
+                Some(limit) => limit.add_order(order),
+                None => {
+                    let mut limit = Limit::new(price);
+                    limit.add_order(order);
+                    self.asks.insert(price, limit);
                 }
-            }
+            },
         }
     }
-}
+}    
+
 
 #[derive(Debug, Eq, PartialEq, Hash, Clone, Copy)]
 struct Price {
@@ -109,13 +104,13 @@ fn main() {
 
     let buy_order_from_alice = Order::new(BidOrAsk::Bid, 5.5);
     let buy_order_from_bob = Order::new(BidOrAsk::Bid, 2.45);
-    let sell_order_from_bob = Order::new(BidOrAsk::Ask, 2.45);
-    // let sell_order = Order::new(BidOrAsk::Ask, 2.45);
 
     let mut orderbook = Orderbook::new();
     orderbook.add_order(4.4, buy_order_from_alice);
     orderbook.add_order(4.4, buy_order_from_bob);
-    orderbook.add_order(51.4, sell_order_from_bob);
+
+    let sell_order = Order::new(BidOrAsk::Ask, 6.5);
+    orderbook.add_order(20.2, sell_order);
 
     println!("{:?}", orderbook);
 }
